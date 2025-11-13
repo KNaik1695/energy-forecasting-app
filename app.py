@@ -13,8 +13,8 @@ st.markdown("Enter the site details to estimate solar energy generation potentia
 
 
 # --- Input fields ---
-latitude = st.number_input("Latitude (°)", value=23.546894, step=0.1)
-longitude = st.number_input("Longitude (°)", value=81.236985, step=0.1)
+latitude = st.number_input("Latitude (°)", value=23.546894, step=0.000001, format="%.6f")
+longitude = st.number_input("Longitude (°)", value=81.236985, step=0.000001, format="%.6f")
 capacity = st.number_input("Installed Capacity (kW)", value=10.0, step=0.1)
 COD = st.text_input("COD (yyyy-mm-dd)", value="2025-06-20")
 average = st.number_input("PT Static Average (kWh/yr)", value=1520.0, step=0.1)
@@ -29,8 +29,8 @@ if st.button("Predict Energy Output"):
     # Outputs in order: case1, 2 and 3, 4 are 1-year and COD-to-EOY yields of the GIS and Regression Model respectively
     
     # Actual outputs = 90% of avg of two model output values
-    yr_yield = 0.9*0.5(case1_total + case3_total)
-    cod_yield = 0.9*0.5(case2_total + case4_total)
+    yr_yield = 0.9*0.5*(case1_total + case3_total)
+    cod_yield = 0.9*0.5*(case2_total + case4_total)
 
     # --- Display scalar results ---
     st.subheader("Model Outputs")
