@@ -40,8 +40,8 @@ if st.button("Predict Energy Output"):
         st.metric("Value:", f"{yr_yield/1e3:.2f} MWh")
     with col2:
         st.text("COD to EOY Yield")
-        st.metric("Value:", f"{case4_total/1e3:.2f} MWh")
-
+        st.metric("Value:", f"{cod_yield/1e3:.2f} MWh")
+        
     # --- Display monthly predictions ---
 
     months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
