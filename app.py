@@ -3,6 +3,7 @@ import streamlit as st
 import altair as alt
 import pandas as pd
 from GSA_Interpolator import SolarEnergyInterpolator
+
 #%%
 
 st.set_page_config(page_title="Solar Energy Predictor", layout="centered")
@@ -10,12 +11,13 @@ st.set_page_config(page_title="Solar Energy Predictor", layout="centered")
 st.title("Solar Energy Forecasting")
 st.markdown("Enter the site details to estimate solar energy generation potential.")
 
+
 # --- Input fields ---
-latitude = st.number_input("Latitude (°)", value=45.0, step=0.1)
-longitude = st.number_input("Longitude (°)", value=-75.0, step=0.1)
+latitude = st.number_input("Latitude (°)", value=23.546894, step=0.1)
+longitude = st.number_input("Longitude (°)", value=81.236985, step=0.1)
 capacity = st.number_input("Installed Capacity (kW)", value=10.0, step=0.1)
-COD = st.text_input("COD (yyyy-mm-dd)", value="2025-01-01")
-average = st.number_input("PT Static Average (kWh/yr)", value=1500.0, step=0.1)
+COD = st.text_input("COD (yyyy-mm-dd)", value="2025-06-20")
+average = st.number_input("PT Static Average (kWh/yr)", value=1520.0, step=0.1)
 
 #%%
 
@@ -23,18 +25,22 @@ if st.button("Predict Energy Output"):
     # Create and run model
     model = SolarEnergyInterpolator()
     case1_vec, case1_total, case2_total, case3_total, case4_total = model.get_solar_energy(latitude, longitude, capacity, COD, average)
+    
+    # Outputs in order: case1, 2 and 3, 4 are 1-year and COD-to-EOY yields of the GIS and Regression Model respectively
+    
+    # Actual outputs = 90% of avg of two model output values
+    yr_yield = 0.9*0.5(case1_total + case3_total)
+    cod_yield = 0.9*0.5(case2_total + case4_total)
 
     # --- Display scalar results ---
     st.subheader("Model Outputs")
     col1, col2 = st.columns(2)
     with col1:
-        st.text("Solar GIS Model Outputs")
-        st.metric("1-Year Yield", f"{case1_total/1e3:.2f} MWh")
-        st.metric("COD to EOY", f"{case2_total/1e3:.2f} MWh")
+        st.text("1-Year Yield")
+        st.metric("Value:", f"{yr_yield/1e3:.2f} MWh")
     with col2:
-        st.text("Regression Model Outputs")
-        st.metric("1-Year Yield", f"{case3_total/1e3:.2f} MWh")
-        st.metric("COD to EOY", f"{case4_total/1e3:.2f} MWh")
+        st.text("COD to EOY Yield")
+        st.metric("Value:", f"{case4_total/1e3:.2f} MWh")
 
     # --- Display monthly predictions ---
 
