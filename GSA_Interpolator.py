@@ -1,5 +1,4 @@
 #%%
-import matplotlib.pyplot as plt
 from scipy.interpolate import RegularGridInterpolator
 import numpy as np  
 from dateutil.parser import parse
@@ -92,21 +91,3 @@ class SolarEnergyInterpolator:
         return case1_vec, case1_total, case2_total, case3_total, case4_total
 
 
-
-# #%% Create interpolator instance
-# GSA_3Dinterpolate = SolarEnergyInterpolator()
-
-# #%% SAMPLE QUERY - 1
-# lat, lon, capacity, COD, staticAvg = 33.0, -109.0, 5, '1/12/2018', 1500
-# case1_vec, case1_total, case2_total, case3_total, case4_total = GSA_3Dinterpolate.get_solar_energy(lat, lon, capacity, COD, staticAvg)
-# print("Year 1 Generation:", case1_total,"kWh")
-
-# #%% SAMPLE QUERY - 2
-# lat, lon, capacity, COD, case = 33.0, -109.0, 3, list(range(6,13)), 3
-# year1_total, year1_vec = GSA_3Dinterpolate.get_solar_energy(lat, lon, capacity, COD, case)
-# print("Year 1 Generation:", year1_total,"kWh")
-# plt.plot(COD, year1_vec, '-o')
-# plt.xlabel('Month Number')
-# plt.ylabel('Energy Gen (kWh)')
-# plt.grid()
-# %%
