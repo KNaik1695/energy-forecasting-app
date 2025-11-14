@@ -11,7 +11,6 @@ st.set_page_config(page_title="Solar Energy Predictor", layout="centered")
 st.title("Solar Energy Forecasting")
 st.markdown("Enter the site details to estimate solar energy generation potential.")
 
-
 # --- Input fields ---
 latitude = st.number_input("Latitude (°)", value=23.546894, step=0.000001, format="%.6f")
 longitude = st.number_input("Longitude (°)", value=81.236985, step=0.000001, format="%.6f")
@@ -74,6 +73,60 @@ if st.button("Predict Energy Output"):
 
     # Display the chart in Streamlit
     st.altair_chart(chart, use_container_width=True)
+
+#%%
+st.subheader("📂 Batch Prediction From CSV")
+
+uploaded_file = st.file_uploader("Upload CSV file with 5 input columns", type=["csv"])
+
+if uploaded_file:
+    df = pd.read_csv(uploaded_file)
+    st.write("Preview of uploaded file:")
+    st.dataframe(df.head())
+
+    # Run model instance
+    model = SolarEnergyInterpolator() 
+    
+    # Validate expected columns
+    expected_cols = ["latitude", "longitude", "capacity", "COD", "average"]
+    if not all(col in df.columns for col in expected_cols):
+        st.error(f"CSV must contain these columns: {expected_cols}")
+    else:
+        if st.button("Run Batch Prediction"):
+            results = []
+
+            for _, row in df.iterrows():
+                   
+                # Run prediction
+                case1_vec, case1_total, case2_total, case3_total, case4_total = model.get_solar_energy(latitude, longitude, capacity, COD, average)
+
+                # # Flatten the monthly vector into columns Month_1 ... Month_12
+                # month_dict = {f"Month_{i+1}": monthly_vector[i] for i in range(12)}
+                
+                yr_yield = round(0.9*0.5*1e-3*(case1_total + case3_total),2)
+                cod_yield = round(0.9*0.5*1e-3*(case2_total + case4_total),2)
+
+                results.append({
+                    "1-year Yield": yr_yield,
+                    "COD to EOY": cod_yield,
+                    # **month_dict
+                })
+
+            # Add results to dataframe
+            results_df = pd.DataFrame(results)
+            output_df = pd.concat([df.reset_index(drop=True), results_df], axis=1)
+
+            st.success("Batch prediction complete!")
+            st.dataframe(output_df.head())
+
+            # Enable CSV download
+            csv_data = output_df.to_csv(index=False)
+            st.download_button(
+                label="Download Results CSV",
+                data=csv_data,
+                file_name="solar_predictions.csv",
+                mime="text/csv"
+            )
 
 
 # %%
