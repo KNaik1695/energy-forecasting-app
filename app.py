@@ -12,13 +12,28 @@ st.title("Solar Energy Forecasting")
 st.markdown("Enter the site details to estimate solar energy generation potential.")
 
 # --- Input fields ---
-latitude = st.number_input("Latitude (°)", value=23.546894, step=0.000001, format="%.6f")
-longitude = st.number_input("Longitude (°)", value=81.236985, step=0.000001, format="%.6f")
-capacity = st.number_input("Installed Capacity (kW)", value=10.0, step=0.1)
-COD = st.text_input("COD (yyyy-mm-dd)", value="2025-06-20")
-average = st.number_input("PT Static Average (kWh/yr)", value=1520.0, step=0.1)
+col1, col2 = st.columns(2)
+
+with col1:
+    latitude = st.number_input("Latitude (°)", value=23.546894, step=0.000001, format="%.6f")
+    longitude = st.number_input("Longitude (°)", value=81.236985, step=0.000001, format="%.6f")
+    capacity = st.number_input("Installed Capacity (kW)", value=10.0, step=0.1)
+    
+with col2:
+    COD = st.text_input("COD (yyyy-mm-dd)", value="2025-06-20")
+    average = st.number_input("PT Static Average (kWh/yr)", value=1520.0, step=0.1)
 
 #%%
+
+st.markdown("""
+    <style>
+    div.stButton > button:first-child {
+        background-color: #04364e; /* Green background */
+        color: white;              /* White text */
+        border-radius: 10px;       /* Rounded corners */
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 if st.button("Predict Energy Output"):
     # Create and run model
@@ -58,16 +73,35 @@ if st.button("Predict Energy Output"):
     # Encode the chart axes and interactivity
     chart = base.encode(
         # X-Axis: Use the ordered 'Month' column, ensure it's treated as Nominal (N) data
-        x=alt.X('Month', sort=months, axis=alt.Axis(title='Month')),
+        x=alt.X(
+        'Month',
+        sort=months,
+        axis=alt.Axis(
+            title='Month',
+            labelColor='#04364e',
+            titleColor='#04364e',
+            labelFontSize=14,
+            titleFontSize=16
+        )
+        ),
         
         # Y-Axis: Use the 'Value' column, ensure it's treated as Quantitative (Q) data
-        y=alt.Y('Value', axis=alt.Axis(title='Energy (kWh)')),
+        y=alt.Y(
+        'Value',
+        axis=alt.Axis(
+            title='Energy (kWh)',
+            labelColor='#04364e',
+            titleColor='#04364e',
+            labelFontSize=14,
+            titleFontSize=16
+        )
+        ),
         
         # INTERACTIVITY: This is what creates the tooltip on hover
         tooltip=['Month', 'Value'],
         
         # Optional: Set a nice, consistent color
-        color=alt.value("#FFD700") 
+        color=alt.value("#04364e") 
 
     ).interactive() # Allows the user to zoom and pan the chart with the mouse
 
