@@ -22,6 +22,7 @@ with col1:
 with col2:
     COD = st.text_input("COD (yyyy-mm-dd)", value="2025-06-20")
     average = st.number_input("PT Static Average (kWh/yr)", value=1520.0, step=0.1)
+    PF = st.number_input("Global Performance Factor (0-1)"), value=0.8, step=0.01, format="%0.2f")
 
 #%%
 
@@ -43,8 +44,8 @@ if st.button("Predict Energy Output"):
     # Outputs in order: case1, 2 and 3, 4 are 1-year and COD-to-EOY yields of the GIS and Regression Model respectively
     
     # Actual outputs = 90% of avg of two model output values
-    yr_yield = 0.9*0.5*(case1_total + case3_total)
-    cod_yield = 0.9*0.5*(case2_total + case4_total)
+    yr_yield = PF*0.5*(case1_total + case3_total)
+    cod_yield = PF*0.5*(case2_total + case4_total)
 
     # --- Display scalar results ---
     st.subheader("Model Outputs")
