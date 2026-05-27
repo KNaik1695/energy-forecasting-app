@@ -22,7 +22,7 @@ with col1:
 with col2:
     COD = st.text_input("COD (yyyy-mm-dd)", value="2025-06-20")
     average = st.number_input("PT Static Average (kWh/yr)", value=1520.0, step=0.1)
-    PF = st.number_input("Global Performance Factor (0-1)"), value=0.8, step=0.01, format="%0.2f")
+    PF = st.number_input("Global Performance Factor (0-1)", value=0.8, step=0.01, format="%0.2f")
 
 #%%
 
