@@ -27,7 +27,7 @@ class SolarEnergyInterpolator:
         self.interpolator = RegularGridInterpolator(
             (lons, lats, months_axis),
             pv_data,
-            method='linear',  # Can be 'nearest' or 'cubic' as well
+            method='nearest',  # Can be 'nearest' or 'cubic' as well
             bounds_error=False, # Does NOT raise error when input is out of bounds
             fill_value=0  # Will return 0 if out of bounds
         )
@@ -55,7 +55,7 @@ class SolarEnergyInterpolator:
         month = list(range(1,13))                                                               # Create month vector
         specEnergy = self.interpolator(( longitude, latitude, month))                           # Compute specific energy
         case1_vec = [capacity*specEnergy[i] * days_vec[i] for i in range(len(specEnergy))]      # Year 1 energy vector
-        case1_total = round(sum(case1_vec), 2) 
+        case1_total = sum(case1_vec)
         
 
         # Case 2: Solar GSA (COD to end-of-year yield)
@@ -64,7 +64,7 @@ class SolarEnergyInterpolator:
         # Partial month (calculate energy for the first month)
         month_number = parsed_date.month 
         partial_month_days = days_vec[month_number - 1] - parsed_date.day + 1                   # days in the partial month (min = 1 day)
-        specEnergy_partial = self.interpolator(( longitude, latitude, month_number))
+        specEnergy_partial = float(self.interpolator(( longitude, latitude, month_number)))
         partial_month_Egen = capacity*specEnergy_partial*partial_month_days
         
         # Full months
@@ -72,12 +72,15 @@ class SolarEnergyInterpolator:
             month_list = list(range(month_number+1,13))                                         # computed only second month onwards
             specEnergy = self.interpolator(( longitude, latitude, month_list))                  # Compute specific energy
             relevant_days_vec = days_vec[month_number:12]                                       # Days vector for month 2 to EOY
-            month2toEOY_vec = [capacity*specEnergy[i] * days_vec[i] for i in range(len(specEnergy))]  # COD to end-of-year vec
-            full_months_Egen = round(sum(month2toEOY_vec), 2)  
+            month2toEOY_vec = [
+                                    capacity * specEnergy[i] * relevant_days_vec[i]
+                                    for i in range(len(specEnergy))
+                                ]                                                               # COD to end-of-year vec
+            full_months_Egen = sum(month2toEOY_vec)
         else:
             relevant_days_vec = [0]
             full_months_Egen = 0
-        case2_total = round(partial_month_Egen + full_months_Egen, 2)
+        case2_total = partial_month_Egen + full_months_Egen
         
         # Case 3: Linear Regression (1-year yield)
         case3_total = capacity*staticAvg
